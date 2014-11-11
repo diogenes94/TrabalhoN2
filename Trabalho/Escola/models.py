@@ -7,7 +7,7 @@ SEXO_OPCOES = [
 	('F','Feminino')
 
 ]
-
+#Não irei usar biblioteca pronta, porque meu choice manual é mais bonito!
 ESTADO_OPCOES = [
  ('AC','Acre - AC'),
  ('AL','Alagoas - AL'),
@@ -37,6 +37,7 @@ ESTADO_OPCOES = [
  ('SE','Sergipe - SE'),
  ('TO','Tocantins - TO')
 ]
+
 
 class Semestre(models.Model):
 	Nome = models.CharField('Semestre',max_length=6,null=True)
@@ -69,6 +70,7 @@ class Periodo (models.Model):
 
 class Disciplina (models.Model):
 	Nome = models.CharField('Nome da Disciplina',max_length=50,null=True)
+	
 	def __unicode__(self):
 		return self.Nome
 
@@ -78,12 +80,12 @@ class EstruturaDisciplina(models.Model):
 	Disciplina = models.ForeignKey(Disciplina,verbose_name='Disciplina')
 
 	def __unicode__(self):
-		return "%s - %s" % (self.Estrutura.Nome,self.Periodo.Nome)
-
+		return "%s - %s - %s" % (self.Estrutura.Nome,self.Periodo.Periodo,self.Disciplina.Nome)
 
 class Turma(models.Model):
 	Semestre = models.ForeignKey(Semestre,verbose_name='Turma')
-	Nome = models.CharField('Turma',max_length=6,null=True)
+	Estrutura = models.ForeignKey(Estrutura,verbose_name='Estrutura',null=True)
+	Nome = models.CharField('Turma',max_length=50,null=True)
 
 	def __unicode__(self):
 		return "%s - %s" % (self.Semestre.Nome,self.Nome)
@@ -93,10 +95,10 @@ class Turma(models.Model):
 
 class TurmaDisciplina(models.Model):
 	Turma = models.ForeignKey(Turma,verbose_name='Turma')
-	Disciplina = models.ForeignKey(Disciplina,verbose_name='Disciplina')
+	Disciplina = models.ForeignKey(EstruturaDisciplina,verbose_name='Disciplina')
 
 	def __unicode__(self):
-		return "%s - %s" % (self.Turma.Nome,self.Disciplina)
+		return "%s - %s" % (self.Turma.Nome,self.Disciplina.Disciplina)
 
 
 
@@ -133,16 +135,7 @@ class DisciplinaAluno(models.Model):
 	Aluno = models.ForeignKey(TurmaAluno,verbose_name='Aluno')
 
 	def __unicode__(self):
-		return "%s - %s" % (self.Disciplina.Disciplina.Nome,self.Aluno.Nome)
-
-class TurmaDiscplinaHorario(models.Model):
-	Professor = models.ForeignKey(Professor,verbose_name='Professor')
-	TurmaDisciplina = models.ForeignKey(TurmaDisciplina,verbose_name='Turma Disciplina')
-	Horario = models.ForeignKey(Horario,verbose_name='Horario')
-
-	def __unicode__(self):
-		return "%s - %s - %s" % (self.TurmaDisciplina.Disciplina.Nome,self.Professor.Nome,self.Horario)
-
+		return "%s - %s" % (self.Disciplina.Disciplina.Disciplina.Nome,self.Aluno.Aluno.Nome)
 
 class Professor(models.Model):
 	Nome = models.CharField('Nome',max_length=100,null=True)
@@ -168,6 +161,17 @@ class Horario(models.Model):
 	HoraFim = models.TimeField('Horário de Inicio')
 	def __unicode__(self):
 		return "%s - %s" % (self.HoraInicio,self.HoraFim)
+
+class TurmaDiscplinaHorario(models.Model):
+	Professor = models.ForeignKey(Professor,verbose_name='Professor')
+	TurmaDisciplina = models.ForeignKey(TurmaDisciplina,verbose_name='Turma Disciplina')
+	Horario = models.ForeignKey(Horario,verbose_name='Horario')
+
+	def __unicode__(self):
+		return "%s - %s - %s" % (self.TurmaDisciplina.Disciplina.Disciplina.Nome,self.Professor.Nome,self.Horario)
+
+
+
 
 
 # Create your models here.
